@@ -5,46 +5,33 @@ dict = {}
 def create(key, value, timeout=0):
     if key in dict:
         print("error: this key already exists")
-    else:
-        if (key.isalpha()):
-            if len(dict) < (1024 * 1020 * 1024) and value <= (
+    elif (key.isalpha()):
+        if len(dict) < (1024 * 1020 * 1024) and value <= (
                     16 * 1024 * 1024):
-                if timeout == 0:
-                    l = [value, timeout]
-                else:
-                    l = [value, time.time() + timeout]
-                if len(key) <= 32:
-                    dict[key] = l
-            else:
-                print("Memory limit exceeded")
+            l = [value, timeout] if timeout == 0 else [value, time.time() + timeout]
+            if len(key) <= 32:
+                dict[key] = l
         else:
-            print("error: Invalind key_name!! key_name must contain only alphabets and no special characters or numbers")
+            print("Memory limit exceeded")
+    else:
+        print("error: Invalind key_name!! key_name must contain only alphabets and no special characters or numbers")
 def read(key):
     if key not in dict:
         print("error: given key does not exist in database. Please enter a valid key")
     else:
         b = dict[key]
-        if b[1] != 0:
-            if time.time() < b[1]:
-                stri = str(key) + ":" + str(
+        if b[1] != 0 and time.time() < b[1] or b[1] == 0:
+            return str(key) + ":" + str(
                     b[0])
-                return stri
-            else:
-                print("error: time-to-live of", key, "has expired")
         else:
-            stri = str(key) + ":" + str(b[0])
-            return stri
+            print("error: time-to-live of", key, "has expired")
 def delete(key):
     if key not in dict:
         print("error: given key does not exist in database. Please enter a valid key")
     else:
         b = dict[key]
-        if b[1] != 0:
-            if time.time() < b[1]:
-                del dict[key]
-                print("key is successfully deleted")
-            else:
-                print("error: time-to-live of", key, "has expired")
-        else:
+        if b[1] != 0 and time.time() < b[1] or b[1] == 0:
             del dict[key]
             print("key is successfully deleted")
+        else:
+            print("error: time-to-live of", key, "has expired")
